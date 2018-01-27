@@ -5,7 +5,7 @@ services:
     ports:
       - "8788:8787" # Tweak default port
     volumes:
-      - .:/home/rstudio
+      - .:/home/rstudio/odkitchen
     links:
       - selenium:selenium
   selenium:
