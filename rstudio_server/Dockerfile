@@ -3,4 +3,4 @@ MAINTAINER "Shinya Uryu" <r.sh1nya.uryu@gmail.com>
 
 RUN install2.r \
   config drake estatapi here hrbrthemes \
-  jpmesh jpndistrict liftr RSelenium
+  jpmesh jpndistrict Nippon liftr RSelenium
