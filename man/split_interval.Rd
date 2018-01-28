@@ -23,9 +23,9 @@ split_interval("平成27年4~5月")
 split_interval("平成27年4月から5月")
 split_interval("平成27年4月より5月")
 split_interval("平成1年11月から平成1年12月")
-# [todo: fix] current not working
-split_interval("平成20年~平成24年") 
-require(lubridate)
+split_interval("平成20年~平成24年")
+
+require(magrittr); require(lubridate)
 tibble::data_frame(
 label = c("平成27年4月~5月",
          "平成29年3月",

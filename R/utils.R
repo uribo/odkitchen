@@ -126,7 +126,7 @@ convert_jyr2ad <- function(x) {
                                NA_character_) %>% Nippon::wareki2AD()
   element_mo <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}月"),
                                x %>% stringr::str_extract(pattern = "[0-9]{1,2}月"),
-                               NA_character_) %>% readr::parse_number()
+                               "12月") %>% readr::parse_number()
   element_dd <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}日"),
                                x %>% stringr::str_extract(pattern = "[0-9]{1,2}日"),
                                "1日") %>% readr::parse_number()
