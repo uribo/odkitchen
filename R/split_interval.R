@@ -4,7 +4,7 @@
 #' @import magrittr
 #' @importFrom lubridate as_date ceiling_date floor_date days make_datetime ymd
 #' @importFrom Nippon wareki2AD
-#' @importFrom purrr as_vector flatten map
+#' @importFrom purrr as_vector keep flatten map
 #' @importFrom stringi stri_datetime_symbols stri_trans_general
 #' @importFrom stringr str_extract str_replace str_split
 #' @importFrom tibble data_frame
@@ -62,18 +62,19 @@ split_interval <- function(label, ...) {
     }
     
   } else {
-    
-    # # # "平成20年-平成24年"
-    # "平成20年-平成24年" %>% 
-    #   stringr::str_split("-")
+
     xx <- fixed_label %>% 
-      stringr::str_split("-") %>%
+      stringr::str_extract_all(pattern = paste0(paste0("(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")"),
+                                                "|[0-9]{1,2}月|[0-9]{1,2}日")) %>% 
       purrr::flatten() %>% 
       purrr::keep(~ .x %>% stringr::str_detect(pattern = paste0("^(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")")))
     
+    # fix: YY-YY
     if (length(xx) == 2) {
       x <- xx %>% purrr::map(~ convert_jyr2ad(.x) %>% as.character) %>% 
-        purrr::flatten()  
+        purrr::flatten()
+      
+      x[[1]][1] <- as.character(lubridate::make_date(lubridate::year(x[[1]][1]), lubridate::month(x[[1]][1]) - 11, lubridate::day(x[[1]][1])))
       
       x[[length(x)]][1]  <- as.character(lubridate::ceiling_date(lubridate::ymd(x[[length(x)]]), unit = "month", change_on_boundary = TRUE) - lubridate::days(1))
     } else {
