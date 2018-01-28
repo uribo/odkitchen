@@ -12,6 +12,7 @@ fix_interval_connect_char <- function(label, ...) {
 }
 
 
+# c("平成23年-平成25年") %>% .interval_prefix()
 .interval_prefix <- function(label) {
   
   elements <- interval_elements()[interval_elements() %in% c(label %>% extract_interval_elements())]
@@ -24,14 +25,13 @@ fix_interval_connect_char <- function(label, ...) {
 fix_interval_complement <- function(label) {
   
   elements <- interval_elements()[interval_elements() %in% c(label %>% extract_interval_elements())]
-  split_label <- split_label(label)
+  splited_label <- split_label(label)
   
-  res <- paste0(paste0(split_label[[1]], max(elements)),
-                paste0(split_label[[2]], min(elements)), collapse = "-")
+  res <- paste0(paste0(splited_label[[1]], max(elements)),
+                paste0(splited_label[[2]], min(elements)), collapse = "-")
   
   return(res)
 }
-
 
 split_label <- function(label) {
   elements <- interval_elements()[interval_elements() %in% c(label %>% extract_interval_elements())]
@@ -55,18 +55,24 @@ fix_interval_jyear <- function(label) {
   return(res)
 }
 
-is_interval <- function(label) {
+.is_interval <- function(x) {
   
-  .is_interval <- function(x) {
-    x %>% stringr::str_detect(paste0(paste0("[0-9]{1,99}", interval_elements(), 
-                               "-", 
-                               "[0-9]{1,99}", interval_elements(), collapse = "|"),
-                              paste0(c("昭和", "平成"),
-                                     paste0("[0-9]{1,2}", interval_elements()[7], 
-                                            "-",
-                                            c("昭和", "平成"),
-                                            "[0-9]{1,2}", interval_elements()[7], collapse = "|")), collapse = "|"))
-  }
+  
+  check <- x %>% stringr::str_detect(paste0(paste0("[0-9]{1,99}", interval_elements(), 
+                                          "-", 
+                                          "[0-9]{1,99}", interval_elements(), collapse = "|"),
+                                   paste0(c("昭和", "平成"),
+                                          paste0("[0-9]{1,2}", interval_elements()[7], 
+                                                 "-",
+                                                 c("昭和", "平成"),
+                                                 "[0-9]{1,2}", interval_elements()[7], collapse = "|")), collapse = "|"))
+  
+  # res <- if_else(check == FALSE, stringr::str_detect(x, "-"), check)
+  
+  return(check)
+}
+
+is_interval <- function(label) {
   
   label <- fix_interval_connect_char(label)
   
@@ -114,6 +120,23 @@ extract_interval_elements <- function(label) {
   return(res)
 }
 
+convert_jyr2ad <- function(x) {
+  element_yr <- dplyr::if_else(x %>% stringr::str_detect(pattern = paste0("^(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")")),
+                               x %>% stringr::str_extract(pattern = paste0("^(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")")),
+                               NA_character_) %>% Nippon::wareki2AD()
+  element_mo <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}月"),
+                               x %>% stringr::str_extract(pattern = "[0-9]{1,2}月"),
+                               NA_character_) %>% readr::parse_number()
+  element_dd <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}日"),
+                               x %>% stringr::str_extract(pattern = "[0-9]{1,2}日"),
+                               "1日") %>% readr::parse_number()
+  res <- list(year = element_yr, month = element_mo, day = element_dd)
+  
+  res <- lubridate::make_date(res$year, res$month, res$day)  
+  
+  return(res)
+}
+
 interval_elements <- function() {
   
   # [todo: add] SI units and symbols 
@@ -124,3 +147,6 @@ interval_elements <- function() {
   
   return(x)
 }
+
+jyr <- paste0(stringi::stri_datetime_symbols(locale = "ja_JP_TRADITIONAL")$Era,
+              "[0-9]{1,2}年", collapse = "|")

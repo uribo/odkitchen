@@ -17,19 +17,20 @@ Split date as character to starts and ends.
 }
 \examples{
 \dontrun{
-split_interval("平成29年3月")
+split_interval("平成29年3月") # Determinate last day of month
 split_interval("平成27年4月-5月")
-split_interval("平成27年4月~5月")
+split_interval("平成27年4~5月")
 split_interval("平成27年4月から5月")
 split_interval("平成27年4月より5月")
-
+split_interval("平成1年11月から平成1年12月")
+# [todo: fix] current not working
+split_interval("平成20年~平成24年") 
 require(lubridate)
 tibble::data_frame(
 label = c("平成27年4月~5月",
          "平成29年3月",
          "平成1年11月から12月",
-         # [todo: fix] current not working
-         "平成1年11月から平成12月")
+         "平成1年11月から平成1年12月")
          ) \%>\% 
          dplyr::mutate(out = purrr::pmap(., split_interval)) \%>\% 
          tidyr::unnest() \%>\% 

@@ -27,9 +27,9 @@ test_that("misc", {
     is_interval("平成22年1月-平成23")
   )
   expect_equal(
-    c("3月~6月", "2月から4月", "1月より2") %>% 
+    c("3月~6月", "2月から4月", "1月より2", "平成23年1~12月", "平成23年1月") %>% 
       purrr::map_lgl(is_interval),
-    c(TRUE, TRUE, FALSE)
+    c(TRUE, TRUE, FALSE, TRUE, FALSE)
   )
   
   
