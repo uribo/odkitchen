@@ -19,7 +19,8 @@ test_that("misc", {
   expect_true(
     is_interval("1月-3月")  
   )
-  expect_true(
+  #[todo: discussion]strict true?
+  expect_false(
     is_interval("平成22年1-2月aaaa")
   )
   #[todo: discussion]strict true?
@@ -32,12 +33,11 @@ test_that("misc", {
     c(TRUE, TRUE, FALSE, TRUE, FALSE)
   )
   
-  
 })
 
 test_that("vector", {
   
-  expect_length(interval_elements(), 8L)
+  expect_length(interval_elements(), 9L)
   expect_true(
     interval_elements()[1] < interval_elements()[3]  
   )

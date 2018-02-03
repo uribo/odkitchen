@@ -24,11 +24,33 @@ fix_interval_connect_char <- function(label, ...) {
 
 fix_interval_complement <- function(label) {
   
-  elements <- interval_elements()[interval_elements() %in% c(label %>% extract_interval_elements())]
-  splited_label <- split_label(label)
+  elements <- interval_elements()[interval_elements() %in% c(label %>% 
+                                                               stringr::str_replace("現在", "") %>% 
+                                                               extract_interval_elements())]
   
-  res <- paste0(paste0(splited_label[[1]], max(elements)),
-                paste0(splited_label[[2]], min(elements)), collapse = "-")
+  if (length(elements) != 0) {
+    splited_label <- split_label(label)
+    
+    if (length(splited_label) == 2 & length(elements) == 1) {
+      res <- paste(paste0(splited_label[[1]], elements),
+                   paste0(splited_label[[2]], elements))
+    } else if (length(splited_label) == 2 & length(elements) == 2) {
+      res <- paste0(paste0(splited_label[[1]], max(elements)),
+                    paste0(splited_label[[2]], min(elements)), collapse = "-")
+    } else if (length(splited_label) == 3) {
+      res <- paste0(paste0(splited_label[[1]], elements[3]),
+                    paste0(splited_label[[2]], elements[2]),
+                    paste0(splited_label[[3]], elements[1]), collapse = "-")
+    } else if (length(splited_label) == 4) {
+      res <- paste0(paste0(splited_label[[1]], elements[2]),
+                    paste0(splited_label[[2]], elements[1]),
+                    paste0(splited_label[[3]], elements[2]),
+                    paste0(splited_label[[4]], elements[1]), collapse = "-")
+    }
+        
+  } else {
+    res <- paste(label, label, sep = "-")
+  }
   
   return(res)
 }
@@ -36,10 +58,32 @@ fix_interval_complement <- function(label) {
 split_label <- function(label) {
   elements <- interval_elements()[interval_elements() %in% c(label %>% extract_interval_elements())]
   
-  res <- label %>% stringr::str_replace_all(paste(elements %>% extract_interval_elements(), collapse = "|"), " ") %>% 
-    stringr::str_split("[:space:]", simplify = TRUE) %>% 
-    stringr::str_split("-") 
+  # tmp_res <- label %>% 
+  #   stringr::str_split_fixed(paste(elements %>% extract_interval_elements(), collapse = "|"), n = length(elements) + 1) %>% 
+  #   .[1:length(elements)]
+    
+  tmp_res <- label %>%
+    stringr::str_replace_all(paste(elements %>% extract_interval_elements(), collapse = "|"), " ") %>%
+    stringr::str_split("[:space:]", simplify = TRUE) %>%
+    stringr::str_extract("[:print:]{1,99}") %>%
+    na.omit()
+  attributes(tmp_res) <- NULL
   
+  res <- tmp_res %>% stringr::str_split("-") 
+
+  checked_empty <- res %>% purrr::map(stringi::stri_isempty)
+   
+  if (checked_empty %>% purrr::flatten_lgl() %>% sum() >= 1) {
+    res <- tmp_res %>% 
+      as.list()
+  }
+  
+  # purrr::discard(~ stringi::stri_isempty(.x) == TRUE) %>% 
+  #   
+  #   purrr::flatten() %>% 
+  #   purrr::discard(~ stringi::stri_isempty(.x) == TRUE)
+  # 
+      
   return(res)
 }
 
@@ -139,9 +183,9 @@ convert_jyr2ad <- function(x) {
 
 interval_elements <- function() {
   
-  # [todo: add] SI units and symbols 
-  # [todo: enhance] order
-  x <- c("年度", "年", "期", "月", "週", "時", "分", "秒") %>% 
+  # TODO: SI units and symbols 
+  # TODO: order
+  x <- c("年度", "年", "期", "月", "週", "日", "時", "分", "秒") %>% 
     rev() %>% 
     forcats::fct_inorder(ordered = TRUE)
   
