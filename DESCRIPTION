@@ -20,9 +20,10 @@ Imports:
     here (>= 0.1),
     lubridate (>= 1.7.1),
     magrittr (>= 1.5),
-    Nippon (>= 0.6.5),
     purrr (>= 0.2.4),
     readxl (>= 1.0.0),
+    rlang (>= 0.1.6),
+    RSelenium (>= 1.7.1),
     stringi (>= 1.1.6),
     stringr (>= 1.2.0),
     tibble (>= 1.4.2),
@@ -32,6 +33,7 @@ Suggests:
     estatapi (>= 0.3.0),
     ggplot2 (>= 2.2.1),
     rvest (>= 0.3.2),
+    usethis (>= 1.2.0),
     testthat (>= 2.0.0)
 License: MIT + file LICENSE
 LazyData: true
