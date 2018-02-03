@@ -24,6 +24,10 @@ split_interval("平成27年4月から5月")
 split_interval("平成27年4月より5月")
 split_interval("平成1年11月から平成1年12月")
 split_interval("平成20年~平成24年")
+split_interval("国家公務員退職手当実態調査(平成28年度)")
+split_interval("平成26年度")
+split_interval("(平成28年1月~3月)")
+split_interval("H20.12.31現在")
 
 require(magrittr); require(lubridate)
 tibble::data_frame(

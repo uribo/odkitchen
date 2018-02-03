@@ -40,4 +40,25 @@ test_that("validation", {
     split_interval("平成20年~平成24年")$start_date,
     lubridate::ymd("2008-01-01"))
   
+  expect_equal(
+    split_interval("国家公務員退職手当実態調査(平成28年度)"),
+    tibble::data_frame(start_date = lubridate::ymd("2016-04-01"), 
+                       end_date = lubridate::ymd("2017-03-31"))
+  )
+  expect_equal(
+    split_interval("平成26年度"),
+    tibble::data_frame(start_date = lubridate::ymd("2014-04-01"), 
+                       end_date = lubridate::ymd("2015-03-31"))
+  )
+  expect_equal(
+    split_interval("(平成28年1月~3月)"),
+    tibble::data_frame(start_date = lubridate::ymd("2016-01-01"), 
+                       end_date = lubridate::ymd("2016-03-31"))
+  )
+  expect_equal(
+    split_interval("H20.12.31現在"),
+    tibble::data_frame(start_date = lubridate::ymd("2008-12-31"), 
+                       end_date = lubridate::ymd("2008-12-31"))
+  )
+  
 })
