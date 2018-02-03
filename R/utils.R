@@ -164,21 +164,25 @@ extract_interval_elements <- function(label) {
   return(res)
 }
 
-convert_jyr2ad <- function(x) {
-  element_yr <- dplyr::if_else(x %>% stringr::str_detect(pattern = paste0("^(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")")),
-                               x %>% stringr::str_extract(pattern = paste0("^(", jyr %>% paste0("|西暦[0-9]{1,4}|[0-9]{1,4}年"), ")")),
-                               NA_character_) %>% Nippon::wareki2AD()
-  element_mo <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}月"),
-                               x %>% stringr::str_extract(pattern = "[0-9]{1,2}月"),
-                               "12月") %>% readr::parse_number()
-  element_dd <- dplyr::if_else(x %>% stringr::str_detect(pattern = "[0-9]{1,2}日"),
-                               x %>% stringr::str_extract(pattern = "[0-9]{1,2}日"),
-                               "1日") %>% readr::parse_number()
-  res <- list(year = element_yr, month = element_mo, day = element_dd)
+parse_jyd <- function(date) {
+  # [consider] use lubridate::parse_date_time?
+  yy <- suppressWarnings(date %>% convert_jyr())
   
-  res <- lubridate::make_date(res$year, res$month, res$day)  
-  
-  return(res)
+  if (is.na(yy) == FALSE) {
+    x <- date %>% 
+      stringr::str_trim() %>% 
+      stringr::str_split("(\\.|-|年|月|日)", simplify = TRUE) %>% 
+      as.vector() %>% 
+      purrr::discard(~ stringi::stri_isempty(.x) == TRUE)
+    
+    mm <- stringr::str_extract(dplyr::if_else(is.na(x[2]), "01", x[2]), "[0-9]{1,2}")
+    dd <- stringr::str_extract(dplyr::if_else(is.na(x[3]), "01", x[3]), "[0-9]{1,2}")
+    
+    res <- lubridate::make_date(yy, mm, dd)
+    
+    return(res)
+  }
+  return(date)
 }
 
 interval_elements <- function() {
