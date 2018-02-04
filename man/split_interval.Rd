@@ -28,6 +28,8 @@ split_interval("国家公務員退職手当実態調査(平成28年度)")
 split_interval("平成26年度")
 split_interval("(平成28年1月~3月)")
 split_interval("H20.12.31現在")
+split_interval("平成17年(2005年)")
+split_interval("平成7年")
 
 require(magrittr); require(lubridate)
 tibble::data_frame(

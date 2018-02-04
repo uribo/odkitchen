@@ -22,6 +22,8 @@
 #' split_interval("平成26年度")
 #' split_interval("(平成28年1月~3月)")
 #' split_interval("H20.12.31現在")
+#' split_interval("平成17年(2005年)")
+#' split_interval("平成7年")
 #' 
 #' require(magrittr); require(lubridate)
 #' tibble::data_frame(
@@ -39,7 +41,10 @@
 split_interval <- function(label, ...) {
   
   fixed_label <- stringi::stri_trans_general(label, id = "nfkd") %>% 
-    fix_interval_connect_char()
+    stringr::str_to_lower() %>% 
+    fix_interval_connect_char() %>% 
+    unique_jyr_label() %>% 
+    stringr::str_replace("\\(年\\)", "")
   
   extract_jyr_doubt <- fixed_label %>% 
     stringr::str_extract("\\(.+\\)") %>% 
@@ -72,16 +77,27 @@ split_interval <- function(label, ...) {
         } else {
           x <- suppressWarnings(fixed_label_tmp %>% 
                                   purrr::flatten() %>% 
-                                  purrr::map(parse_jyd)
-                                # %>% 
-                                #   purrr::map(~ convert_jyr_date(.x) %>% as.character) %>% 
-                                #   purrr::flatten()
+                                  purrr::map(convert_jyr_date)
                                 )
+          
+          tmp_res <- label %>% 
+            extract_jyr()
+          
+          if (length(tmp_res) > 0 & stringr::str_detect(fixed_label, "-") == FALSE) {
+            if (length(tmp_res) == 1) {
+              x[[length(x)]][1]  <- x[[length(x)]][1] + 364
+            } else if (identical_jyr(tmp_res[1], tmp_res[2]) == TRUE) {
+              x[[length(x)]][1]  <- x[[length(x)]][1] + 364
+            } 
+          }
+        
         }
         
-        if (stringr::str_detect(x[[length(x)]], "1$") == TRUE) x[[length(x)]][1]  <- as.character(lubridate::ceiling_date(lubridate::ymd(x[[length(x)]]), unit = "month", change_on_boundary = TRUE) - lubridate::days(1))
-          
         
+        if (stringr::str_detect(x[[length(x)]], "1$") == TRUE) x[[length(x)]][1]  <- as.character(lubridate::ceiling_date(lubridate::ymd(x[[length(x)]]), unit = "month", change_on_boundary = TRUE) - lubridate::days(1))
+        # if (stringr::str_detect(x[[length(x)]], "1$") == TRUE & length(unique(fixed_label_tmp)) > 1) x[[length(x)]][1]  <- as.character(lubridate::ceiling_date(lubridate::ymd(x[[length(x)]]), unit = "month", change_on_boundary = TRUE) - lubridate::days(1))
+        # if (stringr::str_detect(x[[length(x)]], "1$") == TRUE & length(unlist(fixed_label_tmp)) == 2 & length(unique(fixed_label_tmp)) == 1) x[[length(x)]][1]  <- x[[length(x)]][1] + 364
+          
         if (length(x) == 1) {
           rlang::warn("Does not contains interval elements")
           x[[2]] <- x[[1]]
@@ -105,11 +121,25 @@ split_interval <- function(label, ...) {
           
           x[[length(x)]][1]  <- as.character(lubridate::ceiling_date(lubridate::ymd(x[[length(x)]]), unit = "month", change_on_boundary = TRUE) - lubridate::days(1))
         } else {
-          x <- fixed_label %>%
+          
+          # NOTES:
+          
+          x_tmp <- fixed_label %>%
             stringr::str_replace("(\\u662d\\u548c|\\u5e73\\u6210)[0-9]{1,2}\\u5e74", "") %>% 
             stringr::str_extract(".+\\u6708") %>% 
             stringr::str_split("(-|~|\\u304b\\u3089|\\u3088\\u308a)") %>% 
-            purrr::as_vector() %>% 
+            purrr::as_vector()
+          
+          elements <- x_tmp %>% 
+            extract_interval_elements()
+          
+          if (length(elements) == 1) {
+            x_tmp <- x_tmp %>% 
+              stringr::str_replace(elements, "") %>% 
+              stringr::str_c(., elements)
+          }
+          
+          x <- x_tmp %>% 
             purrr::map(
               ~ lubridate::make_datetime(
                 stringr::str_extract(fixed_label, "(\\u662d\\u548c|\\u5e73\\u6210)[0-9]{1,2}\\u5e74") %>% 

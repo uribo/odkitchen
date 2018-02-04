@@ -60,5 +60,15 @@ test_that("validation", {
     tibble::data_frame(start_date = lubridate::ymd("2008-12-31"), 
                        end_date = lubridate::ymd("2008-12-31"))
   )
+  expect_equal(
+    split_interval("平成17年(2005年)"),
+    tibble::data_frame(start_date = lubridate::ymd("2005-01-01"), 
+                       end_date = lubridate::ymd("2005-12-31"))
+  )
+  expect_equal(
+    split_interval("平成7年"),
+    tibble::data_frame(start_date = lubridate::ymd("1995-01-01"), 
+                       end_date = lubridate::ymd("1995-12-31"))
+  )
   
 })
