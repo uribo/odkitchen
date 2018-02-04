@@ -31,7 +31,11 @@ fix_interval_complement <- function(label) {
   if (length(elements) != 0) {
     splited_label <- split_label(label)
     
-    if (length(splited_label) == 2 & length(elements) == 1) {
+    # TODO: enhanced
+    if (length(splited_label) == 1 & length(elements) == 1) {
+      res <- paste(paste0(splited_label[[1]], elements),
+                   paste0(splited_label[[1]], elements), sep = "-")
+    } else if (length(splited_label) == 2 & length(elements) == 1) {
       res <- paste(paste0(splited_label[[1]], elements),
                    paste0(splited_label[[2]], elements))
     } else if (length(splited_label) == 2 & length(elements) == 2) {
@@ -46,6 +50,9 @@ fix_interval_complement <- function(label) {
                     paste0(splited_label[[2]], elements[1]),
                     paste0(splited_label[[3]], elements[2]),
                     paste0(splited_label[[4]], elements[1]), collapse = "-")
+    } else if (length(splited_label) > 5) {
+      res <- paste(paste0(splited_label[[1]], max(elements)),
+                   paste0(splited_label[[1]], max(elements)))
     }
         
   } else {
@@ -169,11 +176,18 @@ parse_jyd <- function(date) {
   yy <- suppressWarnings(date %>% convert_jyr())
   
   if (is.na(yy) == FALSE) {
+      # if (stringr::str_detect(date, "([0-9]{1,2}|[0-9]{4})年$") == TRUE) {
+    #   x
+    # }
     x <- date %>% 
       stringr::str_trim() %>% 
-      stringr::str_split("(\\.|-|年|月|日)", simplify = TRUE) %>% 
+      stringr::str_replace("現在", "") %>% 
+      stringr::str_split(paste0("(\\.|-|",
+                                paste(interval_elements(), collapse = "|"),
+                                ")"), simplify = TRUE) %>% 
       as.vector() %>% 
-      purrr::discard(~ stringi::stri_isempty(.x) == TRUE)
+      purrr::discard(~ stringi::stri_isempty(.x) == TRUE) %>% 
+      purrr::keep(~ stringr::str_detect(.x, "[0-9]{1,4}$") == TRUE)
     
     mm <- stringr::str_extract(dplyr::if_else(is.na(x[2]), "01", x[2]), "[0-9]{1,2}")
     dd <- stringr::str_extract(dplyr::if_else(is.na(x[3]), "01", x[3]), "[0-9]{1,2}")
@@ -196,5 +210,14 @@ interval_elements <- function() {
   return(x)
 }
 
-jyr <- paste0(stringi::stri_datetime_symbols(locale = "ja_JP_TRADITIONAL")$Era,
-              "[0-9]{1,2}年", collapse = "|")
+jyr_kanji <- stringi::stri_datetime_symbols(locale = "ja_JP_TRADITIONAL")$Era[233:236]
+jyr_kanki_capital <- jyr_kanji %>% stringr::str_sub(1, 1)
+jyr_roman_capital <- c("m", "t", "s", "h")
+jyr_sets <- list(
+  meiji = c(jyr_kanji[1], jyr_kanki_capital[1], "meiji", jyr_roman_capital[1]),
+  taisyo = c(jyr_kanji[2], jyr_kanki_capital[2], "taisyo", "taisho", "taisyou", jyr_roman_capital[2]),
+  syouwa = c(jyr_kanji[3], jyr_kanki_capital[3], "syouwa", "showa", jyr_roman_capital[3]),
+  heisei = c(jyr_kanji[4], jyr_kanki_capital[4], "heisei", jyr_roman_capital[4]))
+# nen?
+jyr <- paste0(c(jyr_kanji, jyr_roman_capital),
+              "[0-9]{1,2}", collapse = "|")
