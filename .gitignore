@@ -5,3 +5,4 @@
 config.yml
 *.xls
 *.xlsx
+inst/doc

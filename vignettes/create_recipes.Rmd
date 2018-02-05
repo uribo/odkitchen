@@ -1,0 +1,23 @@
+---
+title: "How to create open data cooking recipes"
+author: "Shinya Uryu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Create Recipes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Collect Data
+
+## Data Wrangling
+
+## Summarise and Visualization

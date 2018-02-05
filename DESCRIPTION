@@ -28,13 +28,17 @@ Imports:
     stringr (>= 1.2.0),
     tibble (>= 1.4.2),
     tidyr (>= 0.7.2)
-Suggests:
+Suggests: 
     config (>= 0.2),
     estatapi (>= 0.3.0),
     ggplot2 (>= 2.2.1),
+    knitr,
+    rmarkdown,
     rvest (>= 0.3.2),
-    usethis (>= 1.2.0),
-    testthat (>= 2.0.0)
+    testthat (>= 2.0.0),
+    usethis (>= 1.2.0)
+VignetteBuilder: knitr
+Encoding: UTF-8
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
