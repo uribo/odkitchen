@@ -1,5 +1,5 @@
-Package: odkitchen
 Type: Package
+Package: odkitchen
 Title: Cooking Recipes And Tidy Utensils For Japan Open Data
 Version: 0.0.0.9999
 Date: 2018-01-27
@@ -8,12 +8,12 @@ Authors@R: c(
     )
 Maintainer: Shinya Uryu <suika1127@gmail.com>
 Description: Tidy tools especially Japanese government statistics web site such as e-stat <https://www.e-stat.go.jp>.
-Depends:
-    R (>= 3.4.3)
+License: MIT + file LICENSE
 URL: https://github.com/uribo/odkitchen
 BugReports: https://github.com/uribo/odkitchen/issues
-Encoding: UTF-8
-Imports:
+Depends: 
+    R (>= 3.4.3)
+Imports: 
     dplyr (>= 0.7.4),
     forcats (>= 0.2.0),
     glue (>= 1.2.0),
@@ -39,6 +39,5 @@ Suggests:
     usethis (>= 1.2.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
-License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
