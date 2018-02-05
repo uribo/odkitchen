@@ -16,8 +16,48 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r}
+library(odkitchen)
+library(tidyverse)
+data("catalog")
+```
+
 ## Collect Data
 
+<!--TODO: flow chart -->
+
+### Search from e-Stat catalog
+
+```{r}
+catalog %>% 
+  filter(str_detect(title, "木材流通")) %>% 
+  tidyr::unnest() %>% 
+  magrittr::use_series(url)
+```
+
+「主要樹種別素材生産量累年統計」需要部門別 全国(昭和35年～平成25年) 
+
 ## Data Wrangling
+
+### Import
+
+```{r}
+d <- readxl::read_excel(
+  here::here("data-raw", "f010c-003-001-000-000.xls"),
+  sheet = 1, 
+  range = c("A6:CA63"),
+  na = c("", "…"))
+```
+
+### Modified raw data
+
+```{r}
+names(d)
+```
+
+```{r}
+# extract true column names
+d[2, ]
+```
 
 ## Summarise and Visualization
