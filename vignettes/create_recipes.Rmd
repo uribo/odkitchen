@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 
 ```{r}
 library(odkitchen)
+library(testthat)
+library(skimr)
 library(tidyverse)
 data("catalog")
 ```
@@ -42,22 +44,77 @@ catalog %>%
 ### Import
 
 ```{r}
-d <- readxl::read_excel(
+# check open excel ahead of time 
+df_raw <- readxl::read_excel(
   here::here("data-raw", "f010c-003-001-000-000.xls"),
   sheet = 1, 
   range = c("A6:CA63"),
   na = c("", "…"))
+
+test_that(
+  "raw-data", {
+    expect_equal(dim(df_raw), c(57, 79))
+  }
+)
 ```
 
 ### Modified raw data
 
 ```{r}
-names(d)
+names(df_raw)
+
+# use this!
+(column_names_part1 <- names(df_raw)[!str_detect(names(df_raw), "X__")])
 ```
 
 ```{r}
 # extract true column names
-d[2, ]
+(column_names_part2 <- df_raw[1, ] %>% 
+  # remove readxl defalt names
+  .[1, ] %>% set_names(NULL) %>% as_vector() %>% 
+  unique() %>% na.omit())
+attributes(column_names_part2) <- NULL
+
+
+column_names_part3 <- df_raw[2, ] %>% 
+    #select_if(all_vars(!is.na(.))) %>% 
+  .[1, ] %>% set_names(NULL) %>% as_vector() %>% 
+  unique() %>% na.omit()
+attributes(column_names_part3) <- NULL
+
+column_names_part3 <- c(column_names_part3[length(column_names_part3)], column_names_part3[1:length(column_names_part3)- 1])
+
+
+# repeat N times
+# (column_names_n_times <- x %>% str_count("製材用") %>% sum())
 ```
+
+```{r}
+# Combine names
+# dplyr::coalesce?
+x <- !str_detect(names(df_raw), "X__")
+x <- x %>% as.numeric()
+
+x <- x %>% 
+  str_replace("0", NA_character_)
+```
+
+```{r}
+long_colnames <- c(column_names_part1[1],
+  column_names_part1[2],
+  paste(column_names_part1[2], column_names_part3[2:length(column_names_part3)], sep = "_"),
+  rep(paste(column_names_part1[3], 
+            paste(rep(column_names_part2[1:8], each = length(column_names_part3)), column_names_part3, sep = "_"), sep = "_")),
+  rep(paste(column_names_part1[4], 
+            paste(rep(column_names_part2[c(1, 9, 10, 8)], each = length(column_names_part3)),
+            column_names_part3, sep = "_"), sep = "_")))
+
+expect_equal(
+  df_raw %>% names() %>% length(),
+  long_colnames %>% length()
+)
+```
+
+
 
 ## Summarise and Visualization
