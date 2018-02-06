@@ -21,6 +21,7 @@ library(odkitchen)
 library(testthat)
 library(skimr)
 library(tidyverse)
+library(magrittr)
 data("catalog")
 ```
 
@@ -31,13 +32,41 @@ data("catalog")
 ### Search from e-Stat catalog
 
 ```{r}
-catalog %>% 
+data_url <- catalog %>% 
   filter(str_detect(title, "木材流通")) %>% 
   tidyr::unnest() %>% 
   magrittr::use_series(url)
 ```
 
-「主要樹種別素材生産量累年統計」需要部門別 全国(昭和35年～平成25年) 
+長期蓄積 「主要樹種別素材生産量累年統計」需要部門別 全国(昭和35年～平成25年) 
+
+<https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&toukei=00500219&tstat=000001015629&cycle=0&tclass1=000001034727&second2=1>
+
+```{r, echo = TRUE, eval = FALSE}
+library(RSelenium)
+eCaps <- list(chromeOptions = list(
+  prefs = list(
+  "profile.default_content_settings.popups" = 0L,
+  "download.prompt_for_download"            = FALSE,
+  "download.default_directory"              = here::here("data-raw")
+  )))
+data_url <- "https://www.e-stat.go.jp/stat-search/files?page=1&layout=datalist&toukei=00500219&tstat=000001015629&cycle=0&tclass1=000001034727&second2=1"
+  
+RSelenium::rsDriver(port = 4444L)
+remDr <- remoteDriver(port = 4444L, browserName = "chrome", extraCapabilities = eCaps)
+
+# download_estat_excel(remDr, data_url) 要素の位置が異なるので以下を実行
+
+remDr$open()
+remDr$navigate(data_url)
+
+webElem <- remDr$findElement("css selector", "div.stat-dataset_list > div > article:nth-child(98) > div > ul > li:nth-child(2) > div:nth-child(3) > div:nth-child(4) > div")
+webElem$getElementText()
+childElems <- webElem$findChildElements("css selector", "span")
+
+childElems[[1]]$clickElement()
+remDr$close()
+```
 
 ## Data Wrangling
 
