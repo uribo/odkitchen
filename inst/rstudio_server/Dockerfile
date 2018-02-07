@@ -7,5 +7,6 @@ RUN apt-get update \
     # fonts-ipafont-mincho
 
 RUN install2.r \
-  config drake estatapi here hrbrthemes \
-  jpmesh jpndistrict liftr RSelenium usethis rlang
+  config drake estatapi ggforce here hrbrthemes \
+  jpmesh jpndistrict liftr naniar RSelenium skimr \
+  usethis rlang
