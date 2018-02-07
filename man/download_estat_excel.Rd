@@ -40,10 +40,5 @@ extraCapabilities = eCaps)
 download_estat_excel(remDr, url = "https://www.e-stat.go.jp/stat-search/files?\\n
 page=1&layout=datalist&toukei=00500226&tstat=000001015623&cycle=7\\n
 &tclass1=000001032194&tclass2=000001100735&stat_infid=000031571891")
-
-remDr <- remoteDriver(
-port = 4445L,
-browserName = "phantomjs",
-extraCapabilities = eCaps)
 }
 }
