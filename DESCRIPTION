@@ -31,11 +31,13 @@ Imports:
 Suggests: 
     config (>= 0.2),
     estatapi (>= 0.3.0),
+    ggforce (>= 0.1.1),
     ggplot2 (>= 2.2.1),
-    knitr,
-    rmarkdown,
+    knitr (>= 1.18),
+    rmarkdown (>= 1.8),
     rvest (>= 0.3.2),
     testthat (>= 2.0.0),
+    units (>= 0.5-1),
     usethis (>= 1.2.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
