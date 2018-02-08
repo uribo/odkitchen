@@ -1,0 +1,7 @@
+name: "Open Data Kitchen"
+output_dir: "."
+navbar:
+  title: "Let's Cooking!"
+  left:
+    - text: "Home"
+      href: index.html
