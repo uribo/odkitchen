@@ -1,7 +1,8 @@
 version: "3"
 services:
   rstudio: 
-    build: "./rstudio_server"
+    image: uribo/odkitchen
+    # build: "./rstudio_server"
     ports:
       - "8788:8787" # Tweak default port
     volumes:
@@ -12,3 +13,11 @@ services:
     image: selenium/standalone-chrome
     ports:
       - "4445:4444"
+  binder:  
+    # image: rocker/binder:latest
+    image: uribo/odkitchen_binder
+    # build: "./binder"
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../.:/home/rstudio/odkitchen
