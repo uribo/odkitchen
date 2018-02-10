@@ -6,13 +6,7 @@
 ^_pkgdown\.yml$
 ^data-raw$
 ^.drake$
-^.rstudio$
 ^recipes$
-^\_site\.yml$
-^site\_libs$
 ^docker\-compose\.yml$
 ^Dockerfile$
 ^config\.yml$
-^rstudio\_server$
-^index\.html$
-^index\.Rmd$

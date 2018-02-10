@@ -3,6 +3,8 @@
 .RData
 .Ruserdata
 config.yml
+.drake
 *.xls
 *.xlsx
 inst/doc
+recipes/
