@@ -12,6 +12,10 @@ convert_jyr(jyr)
 \description{
 Convert Japanese imperial year to Anno Domini
 }
+\examples{
+convert_jyr("H2")
+convert_jyr("平成14年")
+}
 \references{
 Nippon wareki2AD
 }

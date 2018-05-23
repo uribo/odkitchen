@@ -9,7 +9,7 @@
 #' @importFrom stringr str_detect str_extract str_sub
 #' 
 #' @references Nippon wareki2AD
-#' @example 
+#' @examples
 #' convert_jyr("H2")
 #' convert_jyr("平成14年")
 #' @export
@@ -19,17 +19,20 @@ convert_jyr <- function(jyr) {
   
   jyr <- stringr::str_trim(jyr)
   
-  if (stringr::str_detect(jyr, "([0-9]{4}|[0-9]{4}.+年)")) return(as.numeric(stringr::str_replace(jyr, "年", "")))
+  if (stringr::str_detect(jyr, "([0-9]{4}|[0-9]{4}.+年)")) 
+    return(as.numeric(stringr::str_replace(jyr, "年", "")))
     
-  if (is_jyr(jyr) == FALSE) rlang::warn("Unsupported Japanese imperial year.")
+  if (is_jyr(jyr) == FALSE) 
+    rlang::warn("Unsupported Japanese imperial year.")
   
-  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) jyr <- stringr::str_to_lower(jyr)
+  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) 
+    jyr <- stringr::str_to_lower(jyr)
 
-  wareki_yr <- jyr %>% 
-    stringr::str_extract(pattern = "[0-9]{1,2}") %>% as.integer()
+  wareki_yr <- 
+    stringr::str_extract(jyr, pattern = "[0-9]{1,2}") %>% as.integer()
   
-  jyr <- jyr %>% 
-    stringr::str_sub(1, 1)
+  jyr <- 
+    stringr::str_sub(jyr, 1, 1)
   
   wareki <- dplyr::case_when(
     jyr %in% jyr_sets[[1]] ~ names(jyr_sets[1]),
@@ -49,10 +52,13 @@ convert_jyr <- function(jyr) {
 }
 
 is_jyr <- function(jyr) {
-  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) jyr <- stringr::str_to_lower(jyr)
+  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) 
+    jyr <- stringr::str_to_lower(jyr)
 
   if (stringr::str_detect(jyr, 
-                          paste0("^(", glue::collapse(jyr_sets %>% purrr::as_vector(), sep = "|"), ")")) == FALSE) {
+                          paste0("^(", glue::glue_collapse(jyr_sets %>% 
+                                                      purrr::as_vector(), 
+                                                      sep = "|"), ")")) == FALSE) {
     
     FALSE
     # rlang::abort("Unsupported Japanese imperial year.")
