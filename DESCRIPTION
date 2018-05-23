@@ -23,7 +23,6 @@ Imports:
     purrr (>= 0.2.4),
     readxl (>= 1.0.0),
     rlang (>= 0.1.6),
-    RSelenium (>= 1.7.1),
     stringi (>= 1.1.6),
     stringr (>= 1.2.0),
     tibble (>= 1.4.2),

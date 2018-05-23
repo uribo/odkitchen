@@ -2,7 +2,6 @@
 
 export(convert_jyr)
 export(split_interval)
-import(RSelenium)
 import(magrittr)
 importFrom(dplyr,case_when)
 importFrom(glue,collapse)
