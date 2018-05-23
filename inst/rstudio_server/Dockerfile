@@ -1,5 +1,4 @@
-FROM rocker/geospatial:latest
-MAINTAINER "Shinya Uryu" <r.sh1nya.uryu@gmail.com>
+FROM rocker/geospatial:3.5.0
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -9,7 +8,7 @@ RUN apt-get update \
 
 RUN install2.r \
   config drake estatapi ggforce here hrbrthemes \
-  jpmesh jpndistrict liftr naniar pdftools RSelenium skimr \
+  jpmesh jpndistrict liftr naniar pdftools skimr \
   usethis rlang
 
 RUN installGithub.r uribo/odkitchen

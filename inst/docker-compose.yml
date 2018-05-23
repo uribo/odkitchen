@@ -4,7 +4,7 @@ services:
     image: uribo/odkitchen
     # build: "./rstudio_server"
     ports:
-      - "8788:8787" # Tweak default port
+      - "8787:8787"
     volumes:
       - ../.:/home/rstudio/odkitchen
   binder:  
