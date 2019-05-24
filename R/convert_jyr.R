@@ -16,20 +16,20 @@
 convert_jyr <- function(jyr) {
   
   # TODO: round option
+  jyr <- sapply(jyr, stringr::str_trim, USE.NAMES = FALSE)
   
-  jyr <- stringr::str_trim(jyr)
-  
-  if (stringr::str_detect(jyr, "([0-9]{4}|[0-9]{4}.+年)")) 
+  if (sum(sapply(jyr, stringr::str_detect, pattern = "([0-9]{4}|[0-9]{4}.+年)", USE.NAMES = FALSE)) > 0)
     return(as.numeric(stringr::str_replace(jyr, "年", "")))
     
-  if (is_jyr(jyr) == FALSE) 
+  if (sum(is_jyr(jyr)) == 0) 
     rlang::warn("Unsupported Japanese imperial year.")
   
-  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) 
-    jyr <- stringr::str_to_lower(jyr)
-
+  jyr <- 
+    jyr_initial_tolower(jyr)
+  
   wareki_yr <- 
-    stringr::str_extract(jyr, pattern = "[0-9]{1,2}") %>% as.integer()
+    jyr %>% 
+    stringr::str_extract(pattern = "[0-9]{1,2}") %>% as.integer()
   
   jyr <- 
     stringr::str_sub(jyr, 1, 1)
@@ -48,23 +48,25 @@ convert_jyr <- function(jyr) {
     wareki == names(jyr_sets[4]) ~ wareki_yr + 1988
   )
   
-  return(res)    
+  return(res) 
+}
+
+jyr_initial_tolower <- function(jyr) {
+  purrr::modify_if(
+      jyr,
+      .p = ~ stringr::str_detect(.x, "[A-Za-z]"),
+      stringr::str_to_lower)
 }
 
 is_jyr <- function(jyr) {
-  if (stringr::str_detect(jyr, "[A-Za-z]") == TRUE) 
-    jyr <- stringr::str_to_lower(jyr)
-
-  if (stringr::str_detect(jyr, 
-                          paste0("^(", glue::glue_collapse(jyr_sets %>% 
-                                                      purrr::as_vector(), 
-                                                      sep = "|"), ")")) == FALSE) {
-    
-    FALSE
-    # rlang::abort("Unsupported Japanese imperial year.")
-  } else {
-    TRUE  
-  }
+  
+  jyr_initial_tolower(jyr) %>% 
+    purrr::map_lgl(
+      ~ stringr::str_detect(.x, 
+                            paste0("^(", glue::glue_collapse(jyr_sets %>% 
+                                                               purrr::as_vector(), 
+                                                             sep = "|"), ")"))
+    )
 }
 
 convert_jyr_date <- function(x) {
